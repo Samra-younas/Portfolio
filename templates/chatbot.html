@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Samra Younas · AI Portfolio Assistant</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:         #0a0a0a;
+  --bg2:        #111111;
+  --bg3:        #1a1a1a;
+  --card2:      #222222;
+  --line:       rgba(255,255,255,0.08);
+  --line2:      rgba(255,255,255,0.14);
+  --t1:         #f0f0f0;
+  --t2:         #888888;
+  --t3:         #555555;
+  --acc:        #6366f1;
+  --acc-dim:    rgba(99,102,241,0.10);
+  --acc-border: rgba(99,102,241,0.30);
+  --radius:     10px;
+  --radius-sm:  6px;
+  --shadow:     0 2px 8px rgba(0,0,0,0.07);
+  --shadow-md:  0 8px 24px rgba(0,0,0,0.12);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--t1);font-family:'DM Sans',sans-serif;font-size:14px;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
+
+/* ── HEADER ── */
+header{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:58px;border-bottom:1px solid var(--line);background:var(--bg2);box-shadow:var(--shadow)}
+.h-left{display:flex;align-items:center;gap:12px}
+.h-avatar{width:34px;height:34px;border-radius:50%;background:var(--acc-dim);border:1px solid var(--acc-border);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;color:var(--acc)}
+.h-name{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--t1)}
+.h-role{font-size:11px;color:var(--t3);margin-top:1px}
+.h-right{display:flex;align-items:center;gap:14px}
+.h-status{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--t2)}
+.h-dot{width:6px;height:6px;border-radius:50%;background:#22c55e;animation:blink 2.5s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.back-link{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--t3);text-decoration:none;padding:5px 10px;border:1px solid var(--line2);border-radius:var(--radius-sm);transition:all .15s}
+.back-link:hover{color:var(--acc);border-color:var(--acc-border);background:var(--acc-dim)}
+
+/* ── LAYOUT ── */
+.layout{display:flex;flex:1;overflow:hidden}
+
+/* ── SIDEBAR ── */
+.sidebar{width:180px;flex-shrink:0;border-right:1px solid var(--line);background:var(--bg2);padding:16px 10px;display:flex;flex-direction:column;gap:2px;overflow-y:auto}
+.sidebar::-webkit-scrollbar{width:0}
+.s-label{font-size:10px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:var(--t3);padding:0 8px;margin:10px 0 4px}
+.s-label:first-child{margin-top:0}
+.s-btn{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:7px;border:none;background:transparent;color:var(--t2);font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;transition:background .14s,color .14s;text-align:left;width:100%}
+.s-btn:hover{background:var(--bg3);color:var(--t1)}
+.s-btn.active{background:var(--acc-dim);color:var(--acc)}
+.s-div{height:1px;background:var(--line);margin:6px 2px}
+.s-link{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:7px;color:var(--t3);font-size:12px;text-decoration:none;transition:all .14s}
+.s-link:hover{background:var(--bg3);color:var(--t2)}
+
+/* ── CHAT ── */
+.chat{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.msgs{flex:1;overflow-y:auto;padding:20px 20px 10px;display:flex;flex-direction:column;gap:14px;scroll-behavior:smooth}
+.msgs::-webkit-scrollbar{width:4px}
+.msgs::-webkit-scrollbar-thumb{background:var(--card2);border-radius:2px}
+
+/* ── MESSAGES ── */
+.msg{display:flex;gap:10px;animation:fin .22s ease}
+@keyframes fin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.msg.user{flex-direction:row-reverse}
+.m-av{width:28px;height:28px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;border:1px solid var(--line)}
+.msg.bot  .m-av{background:var(--acc-dim);color:var(--acc);border-color:var(--acc-border)}
+.msg.user .m-av{background:var(--bg3);color:var(--t2)}
+.m-bub{max-width:68%;padding:11px 15px;border-radius:12px;font-size:13.5px;line-height:1.65}
+.msg.bot  .m-bub{background:var(--bg2);border:1px solid var(--line);color:var(--t1);border-radius:3px 12px 12px 12px;box-shadow:var(--shadow)}
+.msg.user .m-bub{background:var(--acc);color:white;border-radius:12px 3px 12px 12px}
+.msg.wide .m-bub{max-width:100%;width:100%}
+.msg.error .m-bub{background:#fef2f2;border:1px solid #fecaca;color:#dc2626;border-radius:3px 12px 12px 12px}
+
+/* Typing */
+.t-dots{display:flex;gap:4px;align-items:center;padding:2px 0}
+.t-d{width:5px;height:5px;border-radius:50%;background:var(--t3);animation:tb 1.1s infinite}
+.t-d:nth-child(2){animation-delay:.17s}.t-d:nth-child(3){animation-delay:.34s}
+@keyframes tb{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-5px);opacity:.9}}
+
+/* ── STATUS BAR ── */
+.status-bar{flex-shrink:0;padding:5px 20px;background:var(--bg3);border-top:1px solid var(--line);display:flex;align-items:center;gap:8px;font-size:11px;color:var(--t3)}
+.status-dot{width:5px;height:5px;border-radius:50%;background:#22c55e}
+.status-dot.red{background:#ef4444}
+
+/* ── VISUAL CARD ── */
+.v-card{background:var(--bg2);border:1px solid var(--line);border-radius:var(--radius);padding:18px;width:100%;box-shadow:var(--shadow)}
+.v-title{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--t3);margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--line)}
+
+/* Skills */
+.sk-cat{margin-bottom:16px}
+.sk-cname{font-size:11px;font-weight:600;color:var(--t2);margin-bottom:8px}
+.sk-row{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.sk-n{font-size:12px;color:var(--t2);width:160px;flex-shrink:0}
+.sk-track{flex:1;height:3px;background:var(--bg3);border-radius:2px;overflow:hidden}
+.sk-fill{height:100%;border-radius:2px;background:var(--acc);width:0;transition:width 1s ease}
+.sk-pct{font-size:11px;color:var(--t3);width:28px;text-align:right;font-family:'DM Mono',monospace}
+
+/* Projects */
+.p-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}
+.p-card{background:var(--bg3);border:1px solid var(--line);border-radius:8px;padding:14px;transition:border-color .14s,box-shadow .14s}
+.p-card:hover{border-color:var(--line2);box-shadow:var(--shadow)}
+.p-top{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px}
+.p-ico{font-size:18px;flex-shrink:0}
+.p-name{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--t1);line-height:1.3}
+.p-cat{font-size:10px;color:var(--t3);margin-top:2px;text-transform:uppercase;letter-spacing:.7px}
+.p-desc{font-size:12px;color:var(--t2);line-height:1.55;margin-bottom:8px}
+.p-ach{font-size:11px;color:var(--acc);padding:5px 9px;background:var(--acc-dim);border-left:2px solid var(--acc);border-radius:0 4px 4px 0;margin-bottom:10px}
+.tags{display:flex;flex-wrap:wrap;gap:4px}
+.tag{font-size:10px;padding:2px 8px;border:1px solid var(--line2);border-radius:4px;color:var(--t2);font-family:'DM Mono',monospace;background:var(--bg2)}
+
+/* Timeline */
+.tl{position:relative;padding-left:20px}
+.tl::before{content:'';position:absolute;left:6px;top:10px;bottom:10px;width:1px;background:var(--line2)}
+.tl-item{position:relative;margin-bottom:24px}
+.tl-dot{position:absolute;left:-17px;top:7px;width:8px;height:8px;border-radius:50%;border:1.5px solid var(--t3);background:var(--bg)}
+.tl-dot.now{border-color:var(--acc);background:var(--acc)}
+.tl-role{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--t1)}
+.now-badge{display:inline-block;font-size:9px;padding:2px 7px;border:1px solid var(--acc-border);border-radius:20px;color:var(--acc);background:var(--acc-dim);margin-left:8px;vertical-align:middle}
+.tl-co{font-size:12.5px;color:var(--t2);margin:3px 0 2px}
+.tl-per{font-size:11px;color:var(--t3);font-family:'DM Mono',monospace;margin-bottom:10px}
+.tl-list{list-style:none;display:flex;flex-direction:column;gap:5px;margin-bottom:10px}
+.tl-list li{font-size:12px;color:var(--t2);line-height:1.55;padding-left:13px;position:relative}
+.tl-list li::before{content:'–';position:absolute;left:0;color:var(--acc)}
+
+/* ── CERT CARDS ── */
+
+
+/* ── CERT CARDS ── */
+.c-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(175px,1fr));
+  gap:12px;
+}
+.c-card{
+  background:var(--bg2);
+  border:1px solid var(--line);
+  border-radius:10px;
+  overflow:hidden;
+  cursor:pointer;
+  transition:transform .2s, box-shadow .2s, border-color .2s;
+}
+.c-card:hover{
+  transform:translateY(-3px);
+  box-shadow:0 8px 20px rgba(0,0,0,0.10);
+  border-color:var(--acc-border);
+}
+.c-thumb{
+  width:100%;
+  aspect-ratio:16/9;
+  overflow:hidden;
+  background:var(--bg3);
+  position:relative;
+}
+.c-thumb img{
+  width:100%;height:100%;
+  object-fit:cover;
+  transition:transform .3s;
+}
+.c-card:hover .c-thumb img{transform:scale(1.04)}
+.c-thumb-overlay{
+  position:absolute;inset:0;
+  background:rgba(0,0,0,0);
+  display:flex;align-items:center;justify-content:center;
+  transition:background .2s;
+}
+.c-card:hover .c-thumb-overlay{background:rgba(0,0,0,0.22)}
+.c-thumb-overlay span{
+  opacity:0;
+  font-size:11px;font-weight:600;
+  color:white;
+  background:rgba(0,0,0,0.55);
+  padding:4px 12px;border-radius:20px;
+  transition:opacity .2s;
+}
+.c-card:hover .c-thumb-overlay span{opacity:1}
+.c-body{padding:10px 12px 13px}
+.c-name{
+  font-family:'Syne',sans-serif;
+  font-size:12px;font-weight:700;
+  color:var(--t1);margin-bottom:3px;line-height:1.3;
+}
+.c-iss{font-size:10px;color:var(--t3)}
+
+
+/* Education */
+.edu-card{display:flex;align-items:center;gap:16px;padding:16px;background:var(--bg3);border:1px solid var(--line);border-radius:8px}
+.edu-ico{font-size:32px;flex-shrink:0}
+.edu-deg{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--t1);margin-bottom:4px}
+.edu-inst{font-size:12px;color:var(--t2);margin-bottom:3px}
+.edu-per{font-size:11px;color:var(--t3);font-family:'DM Mono',monospace;margin-bottom:8px}
+.edu-gpa{font-size:13px;color:var(--t2)}
+.edu-gpa strong{color:var(--acc);font-size:15px}
+
+/* ── CERT MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.55);backdrop-filter:blur(8px);z-index:9999;display:flex;align-items:center;justify-content:center;padding:1.5rem;opacity:0;pointer-events:none;transition:opacity .25s ease}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal-box{background:var(--bg2);border:1px solid var(--line2);border-radius:var(--radius);max-width:680px;width:100%;max-height:90vh;overflow-y:auto;transform:translateY(16px) scale(.98);transition:transform .25s ease;box-shadow:var(--shadow-md)}
+.modal-overlay.open .modal-box{transform:translateY(0) scale(1)}
+.modal-header{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.2rem;border-bottom:1px solid var(--line)}
+.modal-title{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;color:var(--t1)}
+.modal-close{width:28px;height:28px;border-radius:var(--radius-sm);border:1px solid var(--line2);background:transparent;color:var(--t2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all .15s;line-height:1}
+.modal-close:hover{border-color:var(--acc-border);color:var(--acc);background:var(--acc-dim)}
+.modal-img{width:100%;display:block}
+.modal-img img{width:100%;height:auto;display:block}
+.modal-footer{display:flex;align-items:center;justify-content:space-between;padding:.9rem 1.2rem;border-top:1px solid var(--line);gap:1rem;flex-wrap:wrap}
+.modal-meta{font-size:0.8rem;color:var(--t2)}
+.modal-btn{display:inline-flex;align-items:center;gap:5px;padding:6px 14px;background:var(--acc);color:white;border:none;border-radius:var(--radius-sm);font-size:12px;font-weight:500;cursor:pointer;text-decoration:none;transition:background .15s}
+.modal-btn:hover{background:#1d4ed8}
+.modal-btn.ghost{background:transparent;color:var(--t2);border:1px solid var(--line2)}
+.modal-btn.ghost:hover{border-color:var(--acc-border);color:var(--acc);background:var(--acc-dim)}
+
+/* ── SUGGESTIONS ── */
+.suggs{flex-shrink:0;padding:8px 20px;border-top:1px solid var(--line);background:var(--bg2);display:flex;gap:6px;flex-wrap:wrap}
+.sg{font-size:11.5px;padding:5px 12px;border:1px solid var(--line2);border-radius:20px;background:var(--bg3);color:var(--t2);font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .14s;white-space:nowrap}
+.sg:hover{border-color:var(--acc-border);color:var(--acc);background:var(--acc-dim)}
+
+/* ── INPUT ── */
+.inp-area{flex-shrink:0;display:flex;align-items:center;gap:8px;padding:10px 20px 14px;background:var(--bg2);border-top:1px solid var(--line)}
+.inp{flex:1;background:var(--bg3);border:1px solid var(--line2);border-radius:9px;padding:10px 14px;color:var(--t1);font-family:'DM Sans',sans-serif;font-size:13.5px;outline:none;transition:border-color .2s}
+.inp:focus{border-color:var(--acc)}
+.inp::placeholder{color:var(--t3)}
+.inp:disabled{opacity:.6;cursor:not-allowed}
+.send{width:38px;height:38px;border-radius:9px;border:none;background:var(--acc);color:white;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s;flex-shrink:0}
+.send:hover{background:#1d4ed8}
+.send:disabled{opacity:.4;cursor:not-allowed}
+
+@media(max-width:600px){.sidebar{display:none}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="h-left">
+    <div class="h-avatar">SY</div>
+    <div>
+      <div class="h-name">Samra Younas</div>
+      <div class="h-role">AI Engineer · LLM Integration, Agentic Systems & Full-Stack AI</div>
+    </div>
+  </div>
+  <div class="h-right">
+    <div class="h-status"><div class="h-dot"></div>Available for hire</div>
+    <a href="/" class="back-link">← Portfolio</a>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="s-label">Explore</div>
+    <button class="s-btn" onclick="showVisual('skills',this)">⚡ Skills</button>
+    <button class="s-btn" onclick="showVisual('projects',this)">🚀 Projects</button>
+    <button class="s-btn" onclick="showVisual('experience',this)">💼 Experience</button>
+    <button class="s-btn" onclick="showVisual('certs',this)">🎓 Certifications</button>
+    <button class="s-btn" onclick="showVisual('education',this)">🏫 Education</button>
+    <div class="s-div"></div>
+    <div class="s-label">Connect</div>
+    <a href="https://linkedin.com/in/samra-younas-ai" target="_blank" class="s-link">💼 LinkedIn</a>
+    <a href="https://github.com/samra-younas"        target="_blank" class="s-link">🐙 GitHub</a>
+<a href="mailto:samrayounas334@gmail.com" class="s-link">✉️ Email</a>   
+ <a href="samra-Younas-cv.pdf" download class="s-link">📄 Download CV</a>
+  </aside>
+
+  <div class="chat">
+    <div class="msgs" id="msgs"></div>
+
+    <div class="status-bar" id="statusBar">
+      <div class="status-dot" id="statusDot"></div>
+      <span id="statusText">Connecting to backend…</span>
+    </div>
+
+    <div class="suggs">
+      <button class="sg" onclick="sendQ('Tell me about yourself')">About Samra</button>
+      <button class="sg" onclick="sendQ('Tell me about your Healthcare AI projects')">Healthcare AI</button>
+      <button class="sg" onclick="sendQ('What LLM frameworks do you use?')">LLM skills</button>
+      <button class="sg" onclick="sendQ('Are you open to remote work?')">Availability</button>
+      <button class="sg" onclick="sendQ('What is your biggest achievement?')">Top achievement</button>
+    </div>
+
+    <div class="inp-area">
+      <input type="text" id="inp" class="inp" placeholder="Ask anything about Samra…" />
+      <button class="send" id="sbtn" onclick="send()">↑</button>
+    </div>
+  </div>
+</div>
+
+<!-- CERT MODAL -->
+<div class="modal-overlay" id="certModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle"></div>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-img">
+      <img id="modalImg" src="" alt="Certificate" />
+    </div>
+    <div class="modal-footer">
+      <div class="modal-meta" id="modalMeta"></div>
+      <div style="display:flex;gap:8px">
+        <button class="modal-btn ghost" onclick="closeModal()">Close</button>
+        <a class="modal-btn" id="modalLink" href="#" target="_blank" rel="noopener">View Original ↗</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const BACKEND = 'http://localhost:5000';
+
+/* ── DATA ── */
+const D = {
+  skills:{
+    "AI & Machine Learning":[
+      {n:"LLM Integration",l:92},{n:"RAG Systems",l:90},{n:"AI Agents",l:88},
+      {n:"NLP",l:88},{n:"Deep Learning",l:86},{n:"Computer Vision",l:85},
+      {n:"CNN / ANN / RNN",l:84},{n:"Hyperparameter Tuning",l:82},{n:"Transfer Learning",l:82}
+    ],
+    "Frameworks":[
+      {n:"LangChain / LangGraph",l:90},{n:"TensorFlow / Keras",l:85},
+      {n:"Hugging Face",l:84},{n:"PyTorch",l:80},
+      {n:"Scikit-learn",l:88},{n:"OpenCV / YOLO",l:82}
+    ],
+    "Development":[
+      {n:"Python",l:95},{n:"Flask / Django",l:85},{n:"REST APIs",l:88},
+      {n:"Docker",l:80},{n:"n8n / Zapier",l:84},{n:"Git",l:88}
+    ],
+    "Databases & Cloud":[
+      {n:"PostgreSQL / MySQL",l:82},{n:"MongoDB",l:80},
+      {n:"Microsoft Azure AI",l:82},{n:"Claude API",l:92},
+      {n:"Groq / LLaMA",l:88},{n:"Epic FHIR API",l:78}
+    ]
+  },
+  projects:[
+    {n:"Clinical Automation Agent",   i:"🏥",d:"NLP + speech recognition agent automating clinical documentation in real-time EHR workflows.",a:"30% reduction in documentation time",t:["Python","NLP","Speech Recognition","LangChain"],c:"Healthcare AI"},
+    {n:"Doctor-Patient Report Generator",i:"📋",d:"Automated medical reports using LLaMA/Groq API and LangGraph for structured clinical narratives.",a:"Fully automated reporting pipeline",t:["LLaMA","Groq API","LangGraph","Python"],c:"Healthcare AI"},
+    {n:"Medical Voice Translator",    i:"🎙️",d:"Real-time speech translation between doctor and patient across multiple languages.",a:"Multi-language real-time communication",t:["Claude API","GPT","Speech-to-Text","gTTS"],c:"Healthcare AI"},
+    {n:"Enterprise RAG Chatbot",      i:"🤖",d:"Knowledge-base chatbot with NER entity extraction and LLM fallback.",a:"Enterprise-grade knowledge retrieval",t:["RAG","LangChain","NER","Python"],c:"Agentic AI"},
+    {n:"Multi-Agent Deals Scraper",   i:"🕷️",d:"Autonomous multi-agent system — Scout, Refiner, Copywriter, Frontend. Auto-publishes deals.",a:"Fully automated deal discovery pipeline",t:["Playwright","Claude API","RSS","Python","PostgreSQL"],c:"Agentic AI"},
+    {n:"Allergen Detection System",   i:"🔍",d:"OCR and computer vision system analyzing menu images for user-specific allergens.",a:"Real-time allergen detection from images",t:["OCR","Computer Vision","OpenCV"],c:"Computer Vision"},
+    {n:"Book Discovery AI Agent",     i:"📚",d:"AI agent with cover image recognition and LLM integration for personalized book recommendations.",a:"Live at ai.synopsisplus.com",t:["QwEN AI","Computer Vision","LLM"],c:"Agentic AI"},
+    {n:"Epic FHIR Integration",       i:"⚕️",d:"OAuth authentication + patient data fetch and update using Epic FHIR Sandbox API.",a:"Seamless EHR interoperability",t:["FHIR","Epic API","Python","OAuth"],c:"Healthcare AI"},
+    {n:"AI English Speaking Coach",   i:"🎤",d:"Voice-based AI coach — Whisper STT, Claude grammar correction, Edge TTS responses.",a:"Personal English learning tool with session history",t:["Whisper","Claude API","Edge TTS","Streamlit"],c:"Personal Project"},
+    {n:"AI Workflow Automation",      i:"⚙️",d:"Business process automation using n8n and Zapier with LLM orchestration.",a:"End-to-end intelligent automation",t:["n8n","Zapier","LLM","Python"],c:"Agentic AI"}
+  ],
+  exp:[
+    {r:"AI Engineer",co:"3rd Eye Software",loc:"Multan",p:"May 2024 – Present",now:true,
+     b:["Clinical Automation Agent — 30% reduction in documentation time",
+        "Doctor-Patient Report Generator using LLaMA/Groq + LangGraph",
+        "Medical Voice Translator — Claude API + GPT, multi-language",
+        "Enterprise RAG Chatbot with NER extraction and LLM fallback",
+        "Multi-Agent Deals Scraper — Playwright, Claude API, auto-posting",
+        "Allergen Detection System — OCR + computer vision",
+        "Book Discovery AI Agent — image recognition (Live: ai.synopsisplus.com)",
+        "Epic FHIR OAuth + patient data integration",
+        "AI workflow automation with n8n & Zapier",
+        "ML models optimized to 91% accuracy"],
+     t:["Python","TensorFlow","LangChain","Flask","OpenCV","Claude API","Docker","n8n","FHIR"]},
+    {r:"Python Development Intern",co:"Enigmatix Software House",loc:"Bahawalpur",p:"Jan 2024 – May 2024",now:false,
+     b:["Improved backend performance by 30% through database optimization",
+        "Built RESTful APIs with JWT authentication",
+        "ML classification features using Scikit-learn",
+        "E-commerce features with secure payment integration"],
+     t:["Python","Django","JavaScript","MySQL","Git","Scikit-learn"]}
+  ],
+  certs:[
+    {n:"AI Fundamentals",         org:"Google · Coursera",date:"Mar 2026",img:"/static/images/certificates/AI_fundamental.jpg",   link:"https://www.coursera.org/account/accomplishments/verify/ILZUBHVZSLDF"},
+    {n:"Docker Essentials",       org:"IBM · Cognitive Class",date:"Feb 2026",img:"/static/images/certificates/docker.jpg",          link:"https://courses.cognitiveclass.ai/certificates/59e9650fbbe14e379d6cc4b00136a9e5"},
+    {n:"Google AI Essentials",    org:"Google · Coursera",date:"Mar 2025",img:"/static/images/certificates/google_Ai_essential.jpg",link:"https://www.coursera.org/account/accomplishments/certificate/VPWJL0RI5NNP"},
+    {n:"Nuts & Bolts of ML",      org:"Google · Coursera",date:"Nov 2025",img:"/static/images/certificates/nutsbolts.jpeg",         link:"https://www.coursera.org/account/accomplishments/certificate/4OPQ94SVVISC"},
+    {n:"Crash Course on Python",  org:"Google · Coursera",date:"Apr 2025",img:"/static/images/certificates/python.jpg",            link:"https://www.coursera.org/account/accomplishments/certificate/IURY1I16AIB0"},
+    {n:"e-Rozgaar — Web Dev & Freelancing",org:"Islamia University",date:"Jan 2023",img:"/static/images/certificates/erozgar.jpg",link:""}
+  ],
+  edu:{d:"BSc Computer Science",inst:"The Islamia University of Bahawalpur",p:"2020 – 2024",gpa:"3.73 / 4.0"}
+};
+
+/* ── STATE ── */
+let hist=[], busy=false, backendOK=false;
+const $=id=>document.getElementById(id);
+
+/* ── BACKEND CHECK ── */
+async function checkBackend(){
+  try{
+    const res=await fetch(`${BACKEND}/health`);
+    const d=await res.json();
+    if(d.status==='ok'){
+      backendOK=true;
+      $('statusDot').className='status-dot';
+      $('statusText').textContent='Connected — ready to chat';
+      setTimeout(()=>$('statusBar').style.display='none',2000);
+    }else setOffline();
+  }catch{setOffline()}
+}
+function setOffline(){
+  backendOK=false;
+  $('statusDot').className='status-dot red';
+  $('statusText').textContent='Backend offline — run: python app.py';
+}
+
+/* ── MESSAGES ── */
+function addMsg(role,content,wide=false,isErr=false){
+  const w=document.createElement('div');
+  w.className=`msg ${role}${wide?' wide':''}${isErr?' error':''}`;
+  const av=document.createElement('div'); av.className='m-av'; av.textContent=role==='bot'?'✦':'◎';
+  const b=document.createElement('div'); b.className='m-bub';
+  if(typeof content==='string') b.innerHTML=renderMd(content);
+  else b.appendChild(content);
+  w.appendChild(av); w.appendChild(b);
+  $('msgs').appendChild(w);
+  $('msgs').scrollTop=$('msgs').scrollHeight;
+  return b;
+}
+function showTyping(){
+  const d=document.createElement('div'); d.className='msg bot'; d.id='typ';
+  d.innerHTML='<div class="m-av">✦</div><div class="m-bub"><div class="t-dots"><div class="t-d"></div><div class="t-d"></div><div class="t-d"></div></div></div>';
+  $('msgs').appendChild(d); $('msgs').scrollTop=$('msgs').scrollHeight;
+}
+function rmTyping(){const t=$('typ');if(t)t.remove()}
+
+/* ── MARKDOWN RENDERER ── */
+function renderMd(text){
+  return text
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g,'<em>$1</em>')
+    .replace(/`(.+?)`/g,'<code style="background:var(--bg3);padding:1px 5px;border-radius:3px;font-family:\'DM Mono\',monospace;font-size:12px">$1</code>')
+    .replace(/\n/g,'<br>');
+}
+
+/* ── SEND ── */
+async function send(){
+  const inp=$('inp'),txt=inp.value.trim();
+  if(!txt||busy)return;
+  if(!backendOK){addMsg('bot','⚠️ Backend not running. Open terminal and run: python app.py',false,true);return}
+  inp.value=''; busy=true; $('sbtn').disabled=true; inp.disabled=true;
+  addMsg('user',txt);
+  hist.push({role:'user',content:txt});
+  showTyping();
+  try{
+    const res=await fetch(`${BACKEND}/api/chat`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({messages:hist})
+    });
+    const data=await res.json();
+    if(!res.ok) throw new Error(data.error||`Server error ${res.status}`);
+    rmTyping();
+    hist.push({role:'assistant',content:data.reply});
+    parseResp(data.reply);
+  }catch(e){
+    rmTyping();
+    addMsg('bot',`⚠️ ${e.message}`,false,true);
+  }
+  busy=false; $('sbtn').disabled=false; inp.disabled=false; inp.focus();
+}
+
+function parseResp(text){
+  const m=text.match(/\[\[SHOW:(skills|projects|experience|certs|education)\]\]/);
+  if(m){
+    const pre=text.replace(/\[\[SHOW:[^\]]+\]\]/,'').trim();
+    if(pre) addMsg('bot',pre);
+    renderVisual(m[1]);
+  }else addMsg('bot',text);
+}
+
+function sendQ(t){$('inp').value=t;send()}
+
+/* ── SIDEBAR ── */
+function showVisual(type,btn){
+  if(!backendOK){addMsg('bot','⚠️ Backend not running. Run: python app.py',false,true);return}
+  document.querySelectorAll('.s-btn').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  const labels={skills:'Show my skills',projects:'Show my projects',experience:'Show my experience',certs:'Show my certifications',education:'Show my education'};
+  addMsg('user',labels[type]);
+  hist.push({role:'user',content:labels[type]});
+  hist.push({role:'assistant',content:`[[SHOW:${type}]]`});
+  renderVisual(type);
+}
+
+/* ── RENDER VISUALS ── */
+function renderVisual(type){
+  let node;
+  if(type==='skills')     node=mkSkills();
+  else if(type==='projects')   node=mkProjects();
+  else if(type==='experience') node=mkExp();
+  else if(type==='certs')      node=mkCerts();
+  else if(type==='education')  node=mkEdu();
+  else return;
+  addMsg('bot',node,true);
+  if(type==='skills'){
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      document.querySelectorAll('.sk-fill').forEach(b=>b.style.width=b.dataset.l+'%');
+    }));
+  }
+}
+
+function mkSkills(){
+  const c=document.createElement('div'); c.className='v-card';
+  let h='<div class="v-title">Technical Skills</div>';
+  for(const[cat,skills]of Object.entries(D.skills)){
+    h+=`<div class="sk-cat"><div class="sk-cname">${cat}</div>`;
+    for(const s of skills) h+=`<div class="sk-row"><div class="sk-n">${s.n}</div><div class="sk-track"><div class="sk-fill" data-l="${s.l}" style="width:0%"></div></div><div class="sk-pct">${s.l}</div></div>`;
+    h+='</div>';
+  }
+  c.innerHTML=h; return c;
+}
+
+function mkProjects(){
+  const c=document.createElement('div'); c.className='v-card';
+  let h='<div class="v-title">Projects</div><div class="p-grid">';
+  for(const p of D.projects)
+    h+=`<div class="p-card"><div class="p-top"><div class="p-ico">${p.i}</div><div><div class="p-name">${p.n}</div><div class="p-cat">${p.c}</div></div></div><div class="p-desc">${p.d}</div><div class="p-ach">${p.a}</div><div class="tags">${p.t.map(x=>`<span class="tag">${x}</span>`).join('')}</div></div>`;
+  h+='</div>'; c.innerHTML=h; return c;
+}
+
+function mkExp(){
+  const c=document.createElement('div'); c.className='v-card';
+  let h='<div class="v-title">Work Experience</div><div class="tl">';
+  for(const e of D.exp)
+    h+=`<div class="tl-item"><div class="tl-dot${e.now?' now':''}"></div><div class="tl-role">${e.r}${e.now?'<span class="now-badge">Current</span>':''}</div><div class="tl-co">${e.co} · ${e.loc}</div><div class="tl-per">${e.p}</div><ul class="tl-list">${e.b.map(x=>`<li>${x}</li>`).join('')}</ul><div class="tags">${e.t.map(x=>`<span class="tag">${x}</span>`).join('')}</div></div>`;
+  h+='</div>'; c.innerHTML=h; return c;
+}
+
+function mkCerts(){
+  const c=document.createElement('div'); c.className='v-card';
+  let h='<div class="v-title">Certifications — click to view</div><div class="c-grid">';
+  for(const x of D.certs){
+    const safeX=JSON.stringify(x).replace(/'/g,"\\'");
+    h+=`<div class="c-card" onclick='openCert(${safeX})'>
+      <div class="c-thumb">
+        <img src="${x.img}" alt="${x.n}" loading="lazy"
+          onerror="this.style.display='none'" />
+        <div class="c-thumb-overlay"><span>View ↗</span></div>
+      </div>
+      <div class="c-body">
+        <div class="c-name">${x.n}</div>
+        <div class="c-iss">${x.org} · ${x.date}</div>
+      </div>
+    </div>`;
+  }
+  h+='</div>'; c.innerHTML=h; return c;
+}
+function mkEdu(){
+  const c=document.createElement('div'); c.className='v-card';
+  const e=D.edu;
+  c.innerHTML=`<div class="v-title">Education</div><div class="edu-card"><div class="edu-ico">🎓</div><div><div class="edu-deg">${e.d}</div><div class="edu-inst">${e.inst}</div><div class="edu-per">${e.p}</div><div class="edu-gpa">CGPA <strong>${e.gpa}</strong></div></div></div>`;
+  return c;
+}
+
+/* ── CERT MODAL ── */
+function openCert(cert){
+  $('modalTitle').textContent = cert.n;
+  $('modalMeta').textContent  = cert.org + ' · ' + cert.date;
+  $('modalImg').src           = cert.img;
+  $('modalImg').alt           = cert.n;
+  const link = $('modalLink');
+  if(cert.link){ link.href=cert.link; link.style.display='inline-flex'; }
+  else { link.style.display='none'; }
+  $('certModal').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeModal(){
+  $('certModal').classList.remove('open');
+  document.body.style.overflow='';
+}
+$('certModal').addEventListener('click',e=>{ if(e.target===$('certModal')) closeModal(); });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
+
+/* ── KEYBOARD ── */
+$('inp').addEventListener('keydown',e=>{ if(e.key==='Enter'&&!e.shiftKey) send(); });
+
+/* ── INIT ── */
+window.addEventListener('load',()=>{
+  checkBackend();
+  addMsg('bot',"Hi! 👋 I'm Samra — AI Engineer specialising in LLM Integration, Agentic Systems & Full-Stack AI.\n\nAsk me anything about my background, projects, or skills — or use the sidebar to explore visually.");
+});
+</script>
+</body>
+</html>
