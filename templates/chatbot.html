@@ -432,7 +432,7 @@ function renderMd(text){
 async function send(){
   const inp=$('inp'),txt=inp.value.trim();
   if(!txt||busy)return;
-  if(!backendOK){addMsg('bot','⚠️ Backend not running. Open terminal and run: python app.py',false,true);return}
+  if(!backendOK){return}
   inp.value=''; busy=true; $('sbtn').disabled=true; inp.disabled=true;
   addMsg('user',txt);
   hist.push({role:'user',content:txt});
@@ -468,7 +468,7 @@ function sendQ(t){$('inp').value=t;send()}
 
 /* ── SIDEBAR ── */
 function showVisual(type,btn){
-  if(!backendOK){addMsg('bot','⚠️ Backend not running. Run: python app.py',false,true);return}
+  if(!backendOK){return}
   document.querySelectorAll('.s-btn').forEach(b=>b.classList.remove('active'));
   if(btn) btn.classList.add('active');
   const labels={skills:'Show my skills',projects:'Show my projects',experience:'Show my experience',certs:'Show my certifications',education:'Show my education'};
