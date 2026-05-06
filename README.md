@@ -1,6 +1,6 @@
 # Samra Younas - AI Engineer Portfolio
 
-![Portfolio Preview](/static/images/projects/1.jpg)
+
 
 ## 🌐 Live Portfolio
 
