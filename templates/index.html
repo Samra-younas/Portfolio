@@ -553,6 +553,58 @@
       flex-wrap: wrap;
     }
 
+    /* Project Card Button Styles */
+    .project-actions .btn {
+      padding: 0.375rem 1rem;
+      font-size: 0.8rem;
+      border-radius: 999px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      border: 1px solid;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .project-actions .btn-primary {
+      background: var(--accent);
+      color: #ffffff;
+      border-color: var(--accent);
+    }
+
+    .project-actions .btn-primary:hover {
+      background: #4f46e5;
+      border-color: #4f46e5;
+      transform: scale(1.05);
+      box-shadow: 0 2px 8px rgba(99,102,241,0.25);
+    }
+
+    .project-actions .btn-ghost {
+      background: transparent;
+      color: var(--muted);
+      border-color: var(--border);
+    }
+
+    .project-actions .btn-ghost:hover {
+      color: var(--text);
+      border-color: var(--accent-border);
+      background: var(--accent-dim);
+      transform: scale(1.05);
+    }
+
+    /* Responsive project buttons */
+    @media (max-width: 768px) {
+      .project-actions {
+        gap: 0.5rem;
+        justify-content: flex-start;
+      }
+      .project-actions .btn {
+        flex: 0 0 auto;
+        min-width: auto;
+      }
+    }
+
     /* ─── EXPERIENCE ─── */
     .timeline {
       display: grid;
@@ -1153,7 +1205,7 @@ Not demos. Real shipped products.
               <div class="chips"><span class="chip">Next.js</span><span class="chip">TypeScript</span><span class="chip">Convex</span><span class="chip">Claude API</span><span class="chip">Web Speech API</span></div>
               <div class="project-actions">
                 <a class="btn btn-primary btn-sm" href="https://coach-py3s9q1az-samras-projects-d5c0a654.vercel.app" target="_blank">Live Demo ↗</a>
-                <a class="btn btn-ghost btn-sm" href="https://github.com/Samra-younas/ai-english-coach" target="_blank">GitHub ↗</a>
+                <a class="btn btn-ghost btn-sm" href="https://github.com/Samra-younas/english-speaking-coach-ai" target="_blank">GitHub ↗</a>
                 <a class="btn btn-ghost btn-sm" href="/static/images/projects/ai-coach-demo.mp4" target="_blank">Video ↗</a>
               </div>
             </div>
@@ -1183,7 +1235,6 @@ Not demos. Real shipped products.
               <p class="project-desc">Patient data fetch and clinical report generation using Epic FHIR R4 sandbox API</p>
               <div class="chips"><span class="chip">Python</span><span class="chip">Flask</span><span class="chip">FHIR R4</span><span class="chip">Epic API</span></div>
               <div class="project-actions">
-                <a class="btn btn-ghost btn-sm" href="https://github.com/samra-younas/FHIR_sandbox_right" target="_blank">GitHub ↗</a>
                 <a class="btn btn-ghost btn-sm" href="/static/images/projects/fhir-demo.mp4" target="_blank">Demo Video ↗</a>
               </div>
             </div>
